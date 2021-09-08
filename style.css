@@ -1,0 +1,106 @@
+*, *::before, *::after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+    user-select: none; /* disabling the undraggable cursor */
+	/* -webkit-user-drag: none; */
+	/* -webkit-app-region: no-drag; */
+	/* cursor: default; */
+}
+
+html {
+    box-sizing: border-box;
+}
+
+body {
+    background: #211f1f;
+    color: white;
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+}
+
+header h1{
+    text-align: center;
+    padding: 35px;
+    color: #f2aa4cff;
+    font-size: 45px;
+}
+
+body main {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+main #settings {
+    width: 15vw;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#settings #colorPicker {
+    display: flex;
+}
+
+#settings button {
+    background: transparent;
+    color: #f2aa4c;
+    font-size: 16px;
+    width: 100%;
+    padding: 10px 20px;
+    border: 2px solid #f2aa4c;
+    border-radius: 5px;
+}
+
+main #gridOuterContainer {
+    width: 650px;
+    height: 650px;
+    background: #343434;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+#gridOuterContainer #gridContainer {
+    display: grid;
+    width: 600px;
+    height: 600px;
+    background: white;
+}
+
+body footer {
+    margin: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+    color: #f2aa4c;
+}
+
+footer #profile {
+    margin-top: 6px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+#profile:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: .4s;
+}
+
+footer #profileText {
+    text-decoration: none;
+    margin: 8px;
+    color: #f2aa4c;
+}
+
+footer #profileText:hover {
+    color: hsla(350, 63%, 72%, 0.966);
+    text-decoration: underline;
+}

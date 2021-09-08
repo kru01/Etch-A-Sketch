@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Etch-a-Sketch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <h1>Etch-a-Sketch</h1>
+    </header>
+
+    <main>
+        <div id="settings">
+            <div id="colorPicker">
+                <div id="backgroundPicker">
+                    <input type="color" value="#fefefe">
+                    <p>Background</p>
+                </div>
+
+                <div id="penPicker">
+                    <input type="color" value="#333333">
+                    <p>Pen</p>
+                </div>
+            </div>
+
+            <button type="button">Color Picker</button>
+            <button type="button">Rainbow</button>
+            <button type="button">Fill Mode</button>
+
+            <button type="button">Eraser</button>
+            <button type="button">Shading</button>
+            <button type="button">Lightening</button>
+
+            <div>
+                <p>Slider</p>
+            </div>
+            <button type="button">Grid Lines</button>
+            <button type="button">Reset</button>
+        </div>
+
+        <div id="gridOuterContainer">
+            <div id="gridContainer"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p style="margin: 8px;">Code by</p>
+        <a target="_blank" href="https://github.com/kru01"><img id="profile" src="images/githubPic.jpg"></a>
+        <a id="profileText" target="_blank" href="https://github.com/kru01">kru01</a>
+    </footer>
+</body>
+
+</html>
