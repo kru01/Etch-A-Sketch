@@ -20,7 +20,7 @@ body {
 
 header h1{
     text-align: center;
-    padding: 35px;
+    padding: 25px;
     color: #f2aa4cff;
     font-size: 45px;
 }
@@ -32,29 +32,92 @@ body main {
 }
 
 main #settings {
-    width: 15vw;
-    gap: 20px;
+    width: 200px;
+    height: 700px;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
+    background: #343434;
 }
 
-#settings #colorPicker {
+main #drawingSection {
     display: flex;
+    flex-direction: column;
 }
+
+#colorPicker {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+input[type="color"] {
+    background: transparent;
+    border: none;
+    width: 120%;
+    height: 120%;
+    transform: translateX(-6px) translateY(-5px);
+}
+
+.pickerWrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.pickerWrapper:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+    box-shadow: 5px black;
+    box-shadow: 0px 0px 20px 5px #f2aa4ca6;
+}
+
+#colorPicker #backgroundPicker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-evenly;
+}
+
+#colorPicker #penPicker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-evenly;
+}
+
+.pickerText {color: #f2aa4c;}
 
 #settings button {
     background: transparent;
     color: #f2aa4c;
     font-size: 16px;
-    width: 100%;
+    width: 75%;
     padding: 10px 20px;
     border: 2px solid #f2aa4c;
     border-radius: 5px;
+    cursor: pointer;
 }
 
-main #gridOuterContainer {
+#settings button:hover {
+    transform: scale(1.1);
+}
+
+#settings #gridSizing #gridSize {
+    text-align: center;
+}
+
+input[type="range"] {
+    height: 2px;
+    appearance: none;
+    background: #f2aa4c;
+    border-radius: 5px;
+}
+
+main #drawingSection #gridOuterContainer {
     width: 650px;
     height: 650px;
     background: #343434;
@@ -71,6 +134,7 @@ main #gridOuterContainer {
     background: white;
 }
 
+/* FOOTER */
 body footer {
     margin: 25px;
     display: flex;

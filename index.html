@@ -19,35 +19,42 @@
 
     <main>
         <div id="settings">
-            <div id="colorPicker">
-                <div id="backgroundPicker">
-                    <input type="color" value="#fefefe">
-                    <p>Background</p>
-                </div>
-
-                <div id="penPicker">
-                    <input type="color" value="#333333">
-                    <p>Pen</p>
-                </div>
-            </div>
-
             <button type="button">Color Picker</button>
             <button type="button">Rainbow</button>
             <button type="button">Fill Mode</button>
-
+            
             <button type="button">Eraser</button>
             <button type="button">Shading</button>
             <button type="button">Lightening</button>
-
-            <div>
-                <p>Slider</p>
+            
+            <div id="gridSizing">
+                <p id="gridSize">16 x 16</p>
+                <input type="range" value="16" min="1" max="70">
             </div>
             <button type="button">Grid Lines</button>
             <button type="button">Reset</button>
         </div>
+        
+        <div id="drawingSection">
+            <div id="colorPicker">
+                <div id="backgroundPicker">
+                    <p class="pickerText">Canvas</p>
+                    <div class="pickerWrapper">
+                        <input type="color" value="#fefefe">
+                    </div>
+                </div>
+    
+                <div id="penPicker">
+                    <p class="pickerText">Pen</p>
+                    <div class="pickerWrapper">
+                        <input type="color" value="#333333">
+                    </div>
+                </div>
+            </div>
 
-        <div id="gridOuterContainer">
-            <div id="gridContainer"></div>
+            <div id="gridOuterContainer">
+                <div id="gridContainer"></div>
+            </div>
         </div>
     </main>
 
