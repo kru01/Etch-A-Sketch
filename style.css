@@ -42,12 +42,38 @@ main #settings {
     background: #343434;
 }
 
+#settings button {
+    background: transparent;
+    color: #f2aa4c;
+    font-size: 16px;
+    width: 75%;
+    padding: 10px 20px;
+    border: 2px solid #f2aa4c;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#settings button:hover {
+    transform: scale(1.1);
+}
+
+#settings #gridSizing #gridSize {
+    text-align: center;
+}
+
+input[type="range"] {
+    height: 2px;
+    appearance: none;
+    background: #f2aa4c;
+    border-radius: 5px;
+}
+
 main #drawingSection {
     display: flex;
     flex-direction: column;
 }
 
-#colorPicker {
+#drawingSection #canvasOptions {
     display: flex;
     justify-content: space-evenly;
 }
@@ -75,47 +101,32 @@ input[type="color"] {
     box-shadow: 0px 0px 20px 5px #f2aa4ca6;
 }
 
-#colorPicker #backgroundPicker {
+#canvasOptions .picker {
     display: flex;
     align-items: center;
     gap: 10px;
     justify-content: space-evenly;
 }
 
-#colorPicker #penPicker {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: space-evenly;
-}
-
-.pickerText {color: #f2aa4c;}
-
-#settings button {
+#canvasOptions #drawMode #modePicker {
     background: transparent;
     color: #f2aa4c;
     font-size: 16px;
-    width: 75%;
-    padding: 10px 20px;
+    width: 100px;
+    padding: 10px 10px;
     border: 2px solid #f2aa4c;
     border-radius: 5px;
     cursor: pointer;
 }
 
-#settings button:hover {
+#modePicker:hover {
     transform: scale(1.1);
+    cursor: pointer;
+    box-shadow: 5px black;
+    box-shadow: 0px 0px 20px 5px #f2aa4ca6;
 }
 
-#settings #gridSizing #gridSize {
-    text-align: center;
-}
-
-input[type="range"] {
-    height: 2px;
-    appearance: none;
-    background: #f2aa4c;
-    border-radius: 5px;
-}
+.pickerText {color: #f2aa4c;}
 
 main #drawingSection #gridOuterContainer {
     width: 650px;

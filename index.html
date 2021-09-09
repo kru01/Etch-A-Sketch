@@ -19,36 +19,41 @@
 
     <main>
         <div id="settings">
-            <button type="button">Color Picker</button>
-            <button type="button">Rainbow</button>
-            <button type="button">Fill Mode</button>
+            <button class="options" type="button">Color Picker</button>
+            <button class="options" type="button">Rainbow</button>
+            <button class="options" type="button">Fill Mode</button>
             
-            <button type="button">Eraser</button>
-            <button type="button">Shading</button>
-            <button type="button">Lightening</button>
+            <button id="eraser" class="options" type="button">Eraser</button>
+            <button class="options" type="button">Darken</button>
+            <button class="options" type="button">Lighten</button>
             
             <div id="gridSizing">
                 <p id="gridSize">16 x 16</p>
-                <input type="range" value="16" min="1" max="70">
+                <input id="slider" type="range" value="16" min="1" max="70">
             </div>
             <button type="button">Grid Lines</button>
-            <button type="button">Reset</button>
+            <button id="resetGrid" type="button">Reset</button>
         </div>
         
         <div id="drawingSection">
-            <div id="colorPicker">
-                <div id="backgroundPicker">
+            <div id="canvasOptions">
+                <div class="picker" id="backgroundPicker">
                     <p class="pickerText">Canvas</p>
                     <div class="pickerWrapper">
-                        <input type="color" value="#fefefe">
+                        <input id="forCanvas" type="color" value="#fefefe">
                     </div>
                 </div>
     
-                <div id="penPicker">
+                <div class="picker" id="penPicker">
                     <p class="pickerText">Pen</p>
                     <div class="pickerWrapper">
-                        <input type="color" value="#333333">
+                        <input id="forPen" type="color" value="#333333">
                     </div>
+                </div>
+
+                <div class="picker" id="drawMode">
+                    <p class="pickerText">Mode</p>
+                    <button id="modePicker" type="button">Hover</button>
                 </div>
             </div>
 
