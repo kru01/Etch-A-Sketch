@@ -1,19 +1,26 @@
 const gridContainer = document.getElementById('gridContainer');
+const gridSize = document.getElementById('gridSize');
 const mode = document.getElementById('modePicker');
+
+const eraser = document.getElementById('eraser');
+const gridLines = document.getElementById('gridLines');
 const resetGrid = document.getElementById('resetGrid');
 
 let canvasCurrentColor = `${gridContainer.style.background}`;
 let penCurrentColor = `#333333`;
+let currentDimension = +gridSize.textContent.substr(0, 2);
 
 window.onload = () => {
-    createGrid(16);
+    createGrid(currentDimension);
     mouseOverColor();
 }
 
 canvasUpdate();
 penUpdate();
 mode.addEventListener('click', drawMode);
-eraserToggle();
+
+eraser.addEventListener(`click`, eraserToggle);
+gridLines.addEventListener(`click`, gridLinesToggle);
 updateGrid();
 resetGrid.addEventListener('click', clearGrid);
 
@@ -42,28 +49,31 @@ function deactivate(id) {
 
 /* ERASER */
 function eraserToggle() {
-    const eraser = document.getElementById('eraser');
-
-    eraser.addEventListener(`click`, () => {
-        if(eraser.classList.contains(`active`)) {
-            penCurrentColor = penUpdate();
-            deactivate("eraser");
-        } else {
-            activate("eraser");
-            penCurrentColor = canvasCurrentColor;
-        }
-    });
+    if(eraser.classList.contains(`active`)) {
+        penCurrentColor = penUpdate();
+        deactivate("eraser");
+    } else {
+        activate("eraser");
+        penCurrentColor = canvasCurrentColor;
+    }
 }
 
 /* Change Grid Dimension*/
 function updateGrid() {
     const slider = document.getElementById('slider');
-    const gridSize = document.getElementById('gridSize');
     
     slider.onchange = (e) => {
         gridSize.textContent = `${e.target.value} x ${e.target.value}`;
-        deleteGrid();
-        createGrid(e.target.value);
+        currentDimension = +e.target.value;
+        
+        if(gridLines.classList.contains('active')) {
+            deleteGrid();
+            createGrid(e.target.value);
+            gridLinesActive(currentDimension);
+        } else {
+            deleteGrid();
+            createGrid(e.target.value);
+        }
 
         /* Maintain the same mode after new grid since drawMode() will invert it  */
         if(mode.textContent === 'Hover') mode.textContent = 'Hold';
@@ -78,13 +88,47 @@ function createGrid(dimension) {
     for(let i = 0; i < dimension * dimension; i++) {
         const gridItems = document.createElement('div');
         gridItems.classList.add('gridItems');
-        gridItems.style.border = `1px solid black`;
         gridContainer.appendChild(gridItems);
     }
 }
 
 function deleteGrid() {
     gridContainer.innerHTML = ``;
+}
+
+/* Toogle GRID LINES */
+function gridLinesToggle() {
+    const gridItems = document.querySelectorAll('.gridItems');
+
+    if(gridLines.classList.contains(`active`)) {
+        gridItems.forEach(gridItem => {
+            gridItem.style.border = `none`;
+        });
+
+        deactivate("gridLines");
+    } else {
+        gridLinesActive(currentDimension);
+        activate("gridLines");
+    }
+}
+
+function gridLinesActive(dimension) {
+    const gridItems = document.querySelectorAll('.gridItems');
+    const maxItemsNum = dimension * dimension;
+
+    gridItems.forEach(gridItem => {
+        gridItem.style.borderTop = `1px solid black`;
+        gridItem.style.borderLeft = `1px solid black`;
+    });
+
+    for(let i = dimension - 1; i < maxItemsNum; i += dimension) {
+        console.log(i);
+        gridItems[i].style.borderRight = `1px solid black`;
+    }
+
+    for(let i = maxItemsNum - 1; i >= maxItemsNum - dimension; i--) {
+        gridItems[i].style.borderBottom = `1px solid black`;
+    }
 }
 
 /* RESET */
