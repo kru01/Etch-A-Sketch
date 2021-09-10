@@ -2,6 +2,7 @@ const gridContainer = document.getElementById('gridContainer');
 const gridSize = document.getElementById('gridSize');
 const mode = document.getElementById('modePicker');
 
+const rainbow = document.getElementById('rainbow');
 const eraser = document.getElementById('eraser');
 const gridLines = document.getElementById('gridLines');
 const resetGrid = document.getElementById('resetGrid');
@@ -19,6 +20,8 @@ canvasUpdate();
 penUpdate();
 mode.addEventListener('click', drawMode);
 
+rainbow.addEventListener('click', rainbowToggle);
+
 eraser.addEventListener(`click`, eraserToggle);
 gridLines.addEventListener(`click`, gridLinesToggle);
 updateGrid();
@@ -31,9 +34,11 @@ function activate(id) {
     const currentOption = document.getElementById(`${id}`);
     const options = document.querySelectorAll(`.options`);
 
-    options.forEach(option => {
-        option.classList.remove(`active`);
-    });
+    if(id !== 'gridLines') {
+        options.forEach(option => {
+            option.classList.remove(`active`);
+        });
+    } 
 
     currentOption.classList.add(`active`);
 
@@ -45,6 +50,24 @@ function deactivate(id) {
     const currentOption = document.getElementById(`${id}`);
 
     currentOption.classList.remove('active');
+}
+
+/* RAINBOW */
+function rainbowToggle() {
+    if(rainbow.classList.contains(`active`)) {
+        penCurrentColor = `${penUpdate()}`;
+        deactivate("rainbow");
+    } else {
+        activate("rainbow");
+        penCurrentColor = randomColor();
+    }
+}
+
+function randomColor() {
+    const randomR = Math.floor(Math.random() * 256)
+    const randomG = Math.floor(Math.random() * 256)
+    const randomB = Math.floor(Math.random() * 256)
+    return `rgb(${randomR}, ${randomG}, ${randomB})`
 }
 
 /* ERASER */
@@ -159,6 +182,10 @@ function penUpdate() {
 
 function changeColor() {
     this.style.background = penCurrentColor;
+
+    if(rainbow.classList.contains(`active`)) {
+        this.style.background = randomColor();
+    }
 }
 
 /* DRAWING MODE */
@@ -196,7 +223,11 @@ function mouseHoldColor() {
     gridItems.forEach(gridItem => {
         gridItem.addEventListener("mousedown", changeColor);
         gridItem.addEventListener("mouseenter", (e) => {
-            if(e.buttons > 0) gridItem.style.background = penCurrentColor;
+            if(e.buttons > 0) {
+                if(rainbow.classList.contains(`active`))
+                    gridItem.style.background = randomColor();
+                else gridItem.style.background = penCurrentColor;
+            }
         });
     });
 }
@@ -207,7 +238,11 @@ function removeMouseHold() {
     gridItems.forEach(gridItem => {
         gridItem.removeEventListener("mousedown", changeColor);
         gridItem.removeEventListener("mouseenter", (e) => {
-            if(e.buttons > 0) gridItem.style.background = penCurrentColor;
+            if(e.buttons > 0) {
+                if(rainbow.classList.contains(`active`))
+                    gridItem.style.background = randomColor();
+                else gridItem.style.background = penCurrentColor;
+            }
         });
     });
 }
