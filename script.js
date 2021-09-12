@@ -54,6 +54,7 @@ function activate(id) {
     } 
 
     currentOption.classList.add(`active`);
+    removeFillOnClick(); // remove click Event of fillMode to avoid duplicating events
 
     if(mode.textContent === 'Hold') mode.textContent = 'Hover';
     drawMode();
@@ -63,6 +64,11 @@ function deactivate(id) {
     const currentOption = document.getElementById(`${id}`);
 
     currentOption.classList.remove('active');
+
+    if(id === `fill`) {
+        if(mode.textContent === 'Hold') mode.textContent = 'Hover';
+        drawMode();
+    }
 }
 
 /* RAINBOW */
@@ -93,10 +99,14 @@ function randomColor() {
 function fillMode() {
     if(fill.classList.contains(`active`)) {
         penCurrentColor = `${penUpdate()}`;
+        removeFillOnClick();
         deactivate("fill");
-        drawMode();
     } else {
         const options = document.querySelectorAll(`.options`);
+
+        if(eraser.classList.contains(`active`)) {
+            penCurrentColor = `${penUpdate()}`;
+        }
 
         options.forEach(option => {
             option.classList.remove(`active`);
@@ -112,24 +122,40 @@ function fillActive() {
     removeMouseOver();
 
     let itemClickedIndex;
+    let seedColor;
     const gridItems = document.querySelectorAll(`.gridItems`);
 
     gridItems.forEach(gridItem => {
-        gridItem.addEventListener('click', (e) => {
-            itemClickedIndex = gridArray.indexOf(e.target);
-
-            let matrixRow = Math.floor(itemClickedIndex / currentDimension);
-            let matrixCol = itemClickedIndex % currentDimension;
-
-            floodFill(matrixRow, matrixCol);
-        });
+        gridItem.addEventListener('click', fillOnClickEvent);
     });
 }
 
-function floodFill(row, col) {
+function removeFillOnClick() {
+    gridItems.forEach(gridItem => {
+        gridItem.removeEventListener('click', fillOnClickEvent);
+    });
+}
+
+function fillOnClickEvent(e) {
+    itemClickedIndex = gridArray.indexOf(e.target);
+    seedColor = e.target.style.background;
+
+    let matrixRow = Math.floor(itemClickedIndex / currentDimension);
+    let matrixCol = itemClickedIndex % currentDimension;
+
+    floodFill(matrixRow, matrixCol, seedColor);
+}
+
+// const waitForSeconds = (secs) => {
+//     return new Promise(resolve => {
+//         setTimeout(resolve, secs * 1000);
+//     });
+// }
+
+const floodFill = (row, col, seedColor) => {
     const fillColor = penCurrentColor;
     const nodes = [{row, col}];
-    const seedColor = canvasCurrentColor;
+    let loopNum = 0;
 
     while(nodes.length > 0) {
         const {row: r, col: c} = nodes.pop();
@@ -143,7 +169,13 @@ function floodFill(row, col) {
         if(node.style.background === fillColor) continue;
         if(node.style.background !== seedColor) continue;
 
+        // The reason why these two lines of code exist is because my dumb brain can't figure out
+        loopNum++;  // how to stop the loop when the whole canvas is filled with one color and then filled with that same color again
+        if(loopNum === currentDimension * currentDimension + 10) break;
+
         node.style.background = fillColor;
+
+        // await waitForSeconds(0.1);
 
         nodes.push({row: r + 1, col: c});
         nodes.push({row: r - 1, col: c});
@@ -206,6 +238,12 @@ function updateGrid() {
             createGrid(e.target.value);
         }
 
+        if(fill.classList.contains(`active`)) {
+            gridItems.forEach(gridItem => {
+                gridItem.addEventListener('click', fillOnClickEvent);
+            });
+        }
+
         /* Maintain the same mode after new grid since drawMode() will invert it  */
         if(mode.textContent === 'Hover') mode.textContent = 'Hold';
         else mode.textContent = 'Hover';
@@ -240,10 +278,11 @@ function gridLinesToggle() {
         deactivate("gridLines");
     } else {
         gridLinesActive(currentDimension);
-        activate("gridLines");
+        
         if(fill.classList.contains(`active`)) {
-            removeMouseOver();
-            removeMouseHold();
+            gridLines.classList.add(`active`);
+        } else {
+            activate("gridLines");
         }
     }
 }
@@ -299,6 +338,8 @@ function changeColor() {
 
 /* DRAWING MODE */
 function drawMode() {
+    if(fill.classList.contains(`active`)) return;
+    
     if(mode.textContent === 'Hover') {
         mode.textContent = 'Hold';
         removeMouseOver();
@@ -325,25 +366,21 @@ function removeMouseOver() {
 function mouseHoldColor() {
     gridItems.forEach(gridItem => {
         gridItem.addEventListener("mousedown", changeColor);
-        gridItem.addEventListener("mouseenter", (e) => {
-            if(e.buttons > 0) {
-                if(rainbow.classList.contains(`active`))
-                    gridItem.style.background = randomColor();
-                else gridItem.style.background = penCurrentColor;
-            }
-        });
+        gridItem.addEventListener("mouseenter", mouseEnterEvent);
     });
 }
 
 function removeMouseHold() {
     gridItems.forEach(gridItem => {
         gridItem.removeEventListener("mousedown", changeColor);
-        gridItem.removeEventListener("mouseenter", (e) => {
-            if(e.buttons > 0) {
-                if(rainbow.classList.contains(`active`))
-                    gridItem.style.background = randomColor();
-                else gridItem.style.background = penCurrentColor;
-            }
-        });
+        gridItem.removeEventListener("mouseenter", mouseEnterEvent);
     });
+}
+
+function mouseEnterEvent(e) {
+    if(e.buttons > 0) {
+        if(rainbow.classList.contains(`active`))
+            e.target.style.background = randomColor();
+        else e.target.style.background = penCurrentColor;
+    }
 }
