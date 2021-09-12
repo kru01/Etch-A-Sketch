@@ -6,6 +6,7 @@ const mode = document.getElementById('modePicker');
 let gridItems; // gridItems = document.querySelectorAll(`.gridItems`);
 let gridArray, gridMatrix; // gridArray = Array.from(gridItems), gridMatrix = arrToMatrix(gridArray, currentDimension);
 
+const colorGrabber = document.getElementById('colorGrabber');
 const rainbow = document.getElementById('rainbow');
 const fill = document.getElementById('fill');
 
@@ -32,6 +33,7 @@ function starter() {
     penUpdate();
     mode.addEventListener('click', drawMode);
     
+    colorGrabber.addEventListener('click', grabberToggle);
     rainbow.addEventListener('click', rainbowToggle);
     fill.addEventListener('click', fillMode);
     
@@ -60,6 +62,7 @@ function activate(id) {
     currentOption.classList.add(`active`);
     removeFillOnClick(); // remove click Event of fillMode to avoid duplicating events
     removeDarkenOrLightenOnClick();
+    removeGrabberOnClick();
 
     if(mode.textContent === 'Hold') mode.textContent = 'Hover';
     drawMode();
@@ -70,11 +73,77 @@ function deactivate(id) {
 
     currentOption.classList.remove('active');
 
-    if(id === `fill` || id === `darken` || id === `lighten`) {
+    if(id === `colorGrabber` || id === `fill` || id === `darken` || id === `lighten`) {
         if(mode.textContent === 'Hold') mode.textContent = 'Hover';
         drawMode();
     }
 }
+
+/* COLOR GRABBER */
+function grabberToggle() {
+    if(colorGrabber.classList.contains(`active`)) {
+        penCurrentColor = `${penUpdate()}`;
+        deactivate("colorGrabber");
+        removeGrabberOnClick();
+    } else {
+        const options = document.querySelectorAll(`.options`);
+
+        options.forEach(option => {
+            option.classList.remove(`active`);
+        });
+
+        colorGrabber.classList.add(`active`);
+        grabberActive();
+    }
+}
+
+function grabberActive() {
+    removeMouseHold();
+    removeMouseOver();
+    removeFillOnClick();
+    removeDarkenOrLightenOnClick();
+
+    const gridItems = document.querySelectorAll(`.gridItems`);
+
+    gridItems.forEach(gridItem => {
+        gridItem.addEventListener('click', grabberOnClick);
+    });
+}
+
+function grabberOnClick(e) {
+    const penPicker = document.getElementById('forPen');
+
+    if(e.target.style.background == ``) 
+        e.target.style.background = `${canvasCurrentColor}`;
+    
+    const [r, g, b] = getRGBValue(e.target.style.background);
+    let hex = RGBToHex(+r, +g, +b);
+
+    penPicker.value = `${hex}`;
+    penCurrentColor = penPicker.value;
+}
+
+function removeGrabberOnClick() {
+    gridItems.forEach(gridItem => {
+        gridItem.removeEventListener('click', grabberOnClick);
+    });
+}
+
+// code from https://css-tricks.com/converting-color-spaces-in-javascript/
+function RGBToHex(r, g, b) {
+    r = r.toString(16);
+    g = g.toString(16);
+    b = b.toString(16);
+  
+    if (r.length == 1)
+      r = "0" + r;
+    if (g.length == 1)
+      g = "0" + g;
+    if (b.length == 1)
+      b = "0" + b;
+  
+    return "#" + r + g + b;
+  }
 
 /* RAINBOW */
 function rainbowToggle() {
@@ -86,14 +155,9 @@ function rainbowToggle() {
         penCurrentColor = randomColor();
     }
 } 
+
 // for rainbow on mouseHold mode to work, randomColor() is also called in mouseHoldColor() and removeMouseHold()
 function randomColor() {
-    // const randomH = Math.floor(Math.random() * 360); 
-    // const randomS = Math.floor(Math.random() * 100);
-    // const randomL = Math.floor(Math.random() * 100);
-    
-    // return `hsl(${randomH}, ${randomS}%, ${randomL}%)`;
-
     const randomR = Math.floor(Math.random() * 256);
     const randomG = Math.floor(Math.random() * 256);
     const randomB = Math.floor(Math.random() * 256);
@@ -126,6 +190,7 @@ function fillActive() {
     removeMouseHold();
     removeMouseOver();
     removeDarkenOrLightenOnClick();
+    removeGrabberOnClick();
 
     const gridItems = document.querySelectorAll(`.gridItems`);
 
@@ -150,12 +215,13 @@ function removeFillOnClick() {
     });
 }
 
+// These lines are for looking into the process of floodFill, put `async` before (row, col, seedColor) and uncomment `await`
 // const waitForSeconds = (secs) => {
 //     return new Promise(resolve => {
 //         setTimeout(resolve, secs * 1000);
 //     });
 // }
-
+// Turtorial from Ourcade https://www.youtube.com/watch?v=DORKRIdw6DI
 const floodFill = (row, col, seedColor) => {
     const fillColor = penCurrentColor;
     const nodes = [{row, col}];
@@ -187,7 +253,7 @@ const floodFill = (row, col, seedColor) => {
         nodes.push({row: r, col: c + 1});
     }
 }
-
+// code from https://stackoverflow.com/questions/4492385/convert-simple-array-into-two-dimensional-array-matrix
 function arrToMatrix(arr, elementsPerSubArray) {
     const matrix = [];
     let rows = -1;
@@ -237,6 +303,7 @@ function darkenOrLightenActive() {
     removeMouseHold();
     removeMouseOver();
     removeFillOnClick();
+    removeGrabberOnClick();
 
     const gridItems = document.querySelectorAll(`.gridItems`);
 
@@ -379,6 +446,11 @@ function updateGrid() {
             deactivate("lighten");
         }
 
+        if(colorGrabber.classList.contains(`active`)) {
+            penCurrentColor = `${penUpdate()}`;
+            deactivate("colorGrabber");
+        }
+
         /* Maintain the same mode after new grid since drawMode() will invert it  */
         if(mode.textContent === 'Hover') mode.textContent = 'Hold';
         else mode.textContent = 'Hover';
@@ -391,9 +463,12 @@ function createGrid(dimension) {
     
     for(let i = 0; i < dimension * dimension; i++) {
         const itemsInit = document.createElement('div');
+
         itemsInit.classList.add('gridItems');
         gridContainer.appendChild(itemsInit);
+
         gridItems = document.querySelectorAll(`.gridItems`);
+
         gridArray = Array.from(gridItems);
         gridMatrix = arrToMatrix(gridArray, currentDimension);
     }
@@ -474,8 +549,9 @@ function changeColor() {
 
 /* DRAWING MODE */
 function drawMode() {
-    if(fill.classList.contains(`active`) || darken.classList.contains(`active`) || lighten.classList.contains(`active`)) 
-        return;
+    if(colorGrabber.classList.contains(`active`) || fill.classList.contains(`active`)
+        || darken.classList.contains(`active`) || lighten.classList.contains(`active`)) 
+            return;
     
     if(mode.textContent === 'Hover') {
         mode.textContent = 'Hold';

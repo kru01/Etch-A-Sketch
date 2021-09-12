@@ -153,7 +153,7 @@ main #drawingSection #gridOuterContainer {
 
 /* FOOTER */
 body footer {
-    margin: 25px;
+    margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -184,4 +184,102 @@ footer #profileText {
 footer #profileText:hover {
     color: hsla(350, 63%, 72%, 0.966);
     text-decoration: underline;
+}
+
+@media(max-width: 1075px) {
+    main #settings {
+        height: 535px;
+        width: 175px;
+    }
+
+    #settings button {
+        font-size: 14px;
+        width: 70%;
+        padding: 7px 10px;
+    }
+
+    main #drawingSection #gridOuterContainer {
+        width: 500px;
+        height: 500px;
+    }
+
+    #drawingSection #canvasOptions {
+        font-size: 14px
+    }
+
+    input[type="color"] {
+        width: 130%;
+        height: 130%;
+        transform: translateX(-4px) translateY(-7px);
+    }
+
+    .pickerWrapper {
+        width: 40px;
+        height: 40px;
+    }
+
+    #canvasOptions #drawMode #modePicker {
+        font-size: 14px;
+        width: 83px;
+        padding: 5px 8px;
+        margin: 10px;
+    }
+
+    #gridOuterContainer #gridContainer {
+        width: 453px;
+        height: 451px;
+    }
+}
+
+@media(max-width: 790px) {
+    main #settings {
+        width: 115px;
+        height: 500px;
+    }
+
+    #settings button {
+        font-size: 12px;
+        width: 60%;
+        padding: 8px 5px;
+    }
+
+    #settings #gridSizing #gridSize {
+        font-size: 10px;
+    }
+
+    input[type="range"] {
+        width: 90px;
+    }
+
+    main #drawingSection #gridOuterContainer {
+        width: 450px;
+        height: 450px;
+    }
+
+    #drawingSection #canvasOptions {
+        font-size: 12px
+    }
+
+    input[type="color"] {
+        width: 140%;
+        height: 140%;
+        transform: translateX(-4px) translateY(-6px);
+    }
+
+    .pickerWrapper {
+        width: 35px;
+        height: 35px;
+    }
+
+    #canvasOptions #drawMode #modePicker {
+        font-size: 12px;
+        width: 80px;
+        padding: 5px 8px;
+        margin: 10px;
+    }
+
+    #gridOuterContainer #gridContainer {
+        width: 403px;
+        height: 400px;
+    }
 }
