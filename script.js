@@ -11,11 +11,12 @@ const fill = document.getElementById('fill');
 
 const eraser = document.getElementById('eraser');
 const darken = document.getElementById('darken');
+const lighten = document.getElementById('lighten');
 
 const gridLines = document.getElementById('gridLines');
 const resetGrid = document.getElementById('resetGrid');
 
-let canvasCurrentColor = `${gridContainer.style.background}`;
+let canvasCurrentColor = `rgb(255, 255, 255)`;
 let penCurrentColor = `#333333`;
 let currentDimension = +gridSize.textContent.substr(0, 2);
 
@@ -35,6 +36,9 @@ function starter() {
     fill.addEventListener('click', fillMode);
     
     eraser.addEventListener(`click`, eraserToggle);
+    darken.addEventListener(`click`, darkenToggle);
+    lighten.addEventListener(`click`, lightenToggle);
+
     gridLines.addEventListener(`click`, gridLinesToggle);
     updateGrid();
     resetGrid.addEventListener('click', clearGrid);
@@ -55,6 +59,7 @@ function activate(id) {
 
     currentOption.classList.add(`active`);
     removeFillOnClick(); // remove click Event of fillMode to avoid duplicating events
+    removeDarkenOrLightenOnClick();
 
     if(mode.textContent === 'Hold') mode.textContent = 'Hover';
     drawMode();
@@ -65,7 +70,7 @@ function deactivate(id) {
 
     currentOption.classList.remove('active');
 
-    if(id === `fill`) {
+    if(id === `fill` || id === `darken` || id === `lighten`) {
         if(mode.textContent === 'Hold') mode.textContent = 'Hover';
         drawMode();
     }
@@ -104,7 +109,7 @@ function fillMode() {
     } else {
         const options = document.querySelectorAll(`.options`);
 
-        if(eraser.classList.contains(`active`)) {
+        if(eraser.classList.contains(`active`) || rainbow.classList.contains(`active`)) {
             penCurrentColor = `${penUpdate()}`;
         }
 
@@ -120,9 +125,8 @@ function fillMode() {
 function fillActive() {
     removeMouseHold();
     removeMouseOver();
+    removeDarkenOrLightenOnClick();
 
-    let itemClickedIndex;
-    let seedColor;
     const gridItems = document.querySelectorAll(`.gridItems`);
 
     gridItems.forEach(gridItem => {
@@ -130,20 +134,20 @@ function fillActive() {
     });
 }
 
+function fillOnClickEvent(e) {
+    let itemClickedIndex = gridArray.indexOf(e.target);
+    let seedColor = e.target.style.background;
+    
+    let matrixRow = Math.floor(itemClickedIndex / currentDimension);
+    let matrixCol = itemClickedIndex % currentDimension;
+    
+    floodFill(matrixRow, matrixCol, seedColor);
+}
+
 function removeFillOnClick() {
     gridItems.forEach(gridItem => {
         gridItem.removeEventListener('click', fillOnClickEvent);
     });
-}
-
-function fillOnClickEvent(e) {
-    itemClickedIndex = gridArray.indexOf(e.target);
-    seedColor = e.target.style.background;
-
-    let matrixRow = Math.floor(itemClickedIndex / currentDimension);
-    let matrixCol = itemClickedIndex % currentDimension;
-
-    floodFill(matrixRow, matrixCol, seedColor);
 }
 
 // const waitForSeconds = (secs) => {
@@ -216,9 +220,130 @@ function darkenToggle() {
     if(darken.classList.contains(`active`)) {
         penCurrentColor = `${penUpdate()}`;
         deactivate("darken");
+        removeDarkenOrLightenOnClick();
     } else {
-        activate("darken");
+        const options = document.querySelectorAll(`.options`);
+
+        options.forEach(option => {
+            option.classList.remove(`active`);
+        });
+
+        darken.classList.add(`active`);
+        darkenOrLightenActive();
     }
+}
+
+function darkenOrLightenActive() {
+    removeMouseHold();
+    removeMouseOver();
+    removeFillOnClick();
+
+    const gridItems = document.querySelectorAll(`.gridItems`);
+
+    gridItems.forEach(gridItem => {
+        gridItem.addEventListener('click', darkenOrLightenOnClick);
+    });
+}
+
+/* LIGHTEN */
+function lightenToggle() {
+    if(lighten.classList.contains(`active`)) {
+        penCurrentColor = `${penUpdate()}`;
+        deactivate("lighten");
+        removeDarkenOrLightenOnClick();
+    } else {
+        const options = document.querySelectorAll(`.options`);
+
+        options.forEach(option => {
+            option.classList.remove(`active`);
+        });
+
+        lighten.classList.add(`active`);
+        darkenOrLightenActive();
+    }
+}
+
+function darkenOrLightenOnClick(e) {
+    if(e.target.style.background == ``) 
+        e.target.style.background = `${canvasCurrentColor}`;
+    
+    const [r, g, b] = getRGBValue(e.target.style.background);
+    let [h, s, l] = rgb2hsl(r, g, b);
+
+    if(darken.classList.contains(`active`)) {
+        if(l === 0) l -= 0;
+        else l -= 5;
+
+    } else if(lighten.classList.contains(`active`)) {
+        if(l === 100) l += 0;
+        else l += 5;
+    }
+
+    e.target.style.background = `hsl(${h}, ${s}%, ${l}%)`;
+}
+
+function removeDarkenOrLightenOnClick(e) {
+    gridItems.forEach(gridItem => {
+        gridItem.removeEventListener('click', darkenOrLightenOnClick);
+    });
+}
+
+function getRGBValue(rgb) {
+    return rgbValue = rgb.match(/\d+/g);
+}
+
+// code from https://stackoverflow.com/questions/39118528/rgb-to-hsl-conversion
+function rgb2hsl(r, g, b) {
+    // convert r,g,b [0,255] range to [0,1]
+    r = r / 255,
+    g = g / 255,
+    b = b / 255;
+    // get the min and max of r,g,b
+    let max = Math.max(r, g, b);
+    let min = Math.min(r, g, b);
+    // lightness is the average of the largest and smallest color components
+    let lum = (max + min) / 2;
+    let hue, sat;
+
+    if (max == min) { // no saturation
+        hue = 0;
+        sat = 0;
+    } else {
+        let c = max - min; // chroma
+        let segment, shift;
+        // saturation is simply the chroma scaled to fill
+        // the interval [0, 1] for every combination of hue and lightness
+        sat = c / (1 - Math.abs(2 * lum - 1));
+
+        switch(max) {
+            case r:
+              segment = (g - b) / c;
+              shift   = 0 / 60;       // R° / (360° / hex sides)
+              if (segment < 0) {          // hue > 180, full rotation
+                shift = 360 / 60;         // R° / (360° / hex sides)
+              }
+              hue = segment + shift;
+              break;
+
+            case g:
+              segment = (b - r) / c;
+              shift   = 120 / 60;     // G° / (360° / hex sides)
+              hue = segment + shift;
+              break;
+
+            case b:
+              segment = (r - g) / c;
+              shift   = 240 / 60;     // B° / (360° / hex sides)
+              hue = segment + shift;
+              break;
+          }
+    }
+
+    hue = Math.round(hue * 60); // °
+    sat = Math.round(sat * 100); // %
+    lum = Math.round(lum * 100); // %
+
+    return [hue, sat, lum];
 }
 
 /* Change Grid Dimension*/
@@ -242,6 +367,16 @@ function updateGrid() {
             gridItems.forEach(gridItem => {
                 gridItem.addEventListener('click', fillOnClickEvent);
             });
+        }
+
+        if(darken.classList.contains(`active`)) {
+            penCurrentColor = `${penUpdate()}`;
+            deactivate("darken");
+        }
+
+        if(lighten.classList.contains(`active`)) {
+            penCurrentColor = `${penUpdate()}`;
+            deactivate("lighten");
         }
 
         /* Maintain the same mode after new grid since drawMode() will invert it  */
@@ -317,6 +452,7 @@ function canvasUpdate() {
 
     canvasPicker.onchange = (e) => {
         gridContainer.style.background = `${e.target.value}`;
+        canvasCurrentColor = gridContainer.style.background;
     }
 }
 
@@ -338,7 +474,8 @@ function changeColor() {
 
 /* DRAWING MODE */
 function drawMode() {
-    if(fill.classList.contains(`active`)) return;
+    if(fill.classList.contains(`active`) || darken.classList.contains(`active`) || lighten.classList.contains(`active`)) 
+        return;
     
     if(mode.textContent === 'Hover') {
         mode.textContent = 'Hold';
