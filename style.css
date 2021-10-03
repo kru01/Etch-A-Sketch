@@ -27,8 +27,9 @@ header h1{
 
 body main {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
+    gap: 50px;
 }
 
 main #settings {
@@ -232,15 +233,29 @@ footer #profileText:hover {
 }
 
 @media(max-width: 790px) {
+    body main {
+        flex-direction: column-reverse;
+        gap: 20px;
+    }
+
     main #settings {
-        width: 115px;
-        height: 500px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        width: 470px;
+        height: 140px;
+        padding: 10px 0px;
     }
 
     #settings button {
         font-size: 12px;
-        width: 60%;
+        width: 100px;
         padding: 8px 5px;
+    }
+
+    #settings #gridSizing {
+        order: 1;
     }
 
     #settings #gridSizing #gridSize {
@@ -248,7 +263,7 @@ footer #profileText:hover {
     }
 
     input[type="range"] {
-        width: 90px;
+        width: 250px;
     }
 
     main #drawingSection #gridOuterContainer {
